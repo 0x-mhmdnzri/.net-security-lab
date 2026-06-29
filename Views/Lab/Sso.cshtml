@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Single Sign-On Redirect";
+    var returnUrl = ViewData["ReturnUrl"] as string;
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var error = ViewData["Error"] as string;
+}
+
+<h1>SAML / SSO Redirect</h1>
+<p>This lab demonstrates open redirect handling for an SSO-style return URL. Hardened mode only allows local return URLs.</p>
+
+<form method="get" class="lab-form mb-4">
+    <div class="mb-3">
+        <label class="form-label">Return URL</label>
+        <input class="form-control" name="returnUrl" value="@returnUrl" />
+    </div>
+    <input type="hidden" name="hardened" value="@hardened" />
+    <button type="submit" class="btn @(hardened ? "btn-success" : "btn-danger")">Proceed @(hardened ? "hardened" : "vulnerable") login</button>
+    <a class="btn btn-secondary" href="?returnUrl=@returnUrl&amp;hardened=@(!hardened)">@(!hardened ? "Switch to hardened" : "Switch to vulnerable")</a>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="alert @(hardened ? "alert-success" : "alert-warning")">
+    @if (hardened)
+    {
+        <text><strong>Hardened:</strong> Only local return URLs are accepted for SSO redirects.</text>
+    }
+    else
+    {
+        <text><strong>Vulnerable:</strong> External return URLs can be used, creating an open redirect risk.</text>
+    }
+</div>

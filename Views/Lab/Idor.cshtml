@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "IDOR";
+    var user = ViewData["User"] as string ?? "alice";
+    var requestedId = ViewData["RequestedId"] as string ?? "1";
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var error = ViewData["Error"] as string;
+    var document = ViewData["Document"] as SecurityLab.Models.Document;
+}
+
+<h1>Insecure direct object reference (IDOR)</h1>
+<p>This example lets a user access documents by ID. The hardened version verifies ownership before returning data.</p>
+
+<form method="get" class="mb-3">
+    <input type="hidden" name="hardened" value="@hardened" />
+    <div class="row">
+        <div class="col-md-4 mb-2">
+            <label class="form-label">User</label>
+            <select class="form-select" name="user">
+                <option value="alice" selected="@(user == "alice")">alice</option>
+                <option value="bob" selected="@(user == "bob")">bob</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-2">
+            <label class="form-label">Document ID</label>
+            <input class="form-control" name="id" value="@requestedId" />
+        </div>
+        <div class="col-md-4 mb-2">
+            <label class="form-label">Mode</label>
+            <button type="submit" class="btn btn-primary mt-4">View</button>
+            <a class="btn btn-secondary mt-4" href="?user=@user&amp;hardened=@(!hardened)">Switch to @(!hardened ? "hardened" : "vulnerable")</a>
+        </div>
+    </div>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+@if (document is not null)
+{
+    <div class="card mb-3">
+        <div class="card-header">Document metadata</div>
+        <div class="card-body">
+            <p><strong>ID:</strong> @document.Id</p>
+            <p><strong>Title:</strong> @document.Title</p>
+            <p><strong>Owner:</strong> @document.Owner</p>
+        </div>
+    </div>
+}
+
+<div class="alert alert-info">
+    Documents 1 and 2 belong to different users. A vulnerable implementation may allow any authenticated user to request either document simply by changing the ID.
+</div>

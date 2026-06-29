@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "CSRF";
+    var balances = ViewData["Balances"] as Dictionary<string, int>;
+    var message = ViewData["Message"] as string;
+}
+
+<h1>Cross-site request forgery (CSRF)</h1>
+<p>This lab shows a vulnerable transfer endpoint and a protected version that uses an anti-forgery token.</p>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-info">@message</div>
+}
+
+<h2>Account balances</h2>
+<ul>
+    @foreach (var entry in balances ?? new Dictionary<string, int>())
+    {
+        <li>@entry.Key: @entry.Value</li>
+    }
+</ul>
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>Vulnerable transfer</h3>
+        <form asp-action="Transfer" method="post">
+            <div class="mb-2">
+                <label class="form-label">From</label>
+                <input class="form-control" name="from" value="alice" />
+            </div>
+            <div class="mb-2">
+                <label class="form-label">To</label>
+                <input class="form-control" name="to" value="bob" />
+            </div>
+            <div class="mb-2">
+                <label class="form-label">Amount</label>
+                <input class="form-control" name="amount" value="100" />
+            </div>
+            <button type="submit" class="btn btn-danger">Submit vulnerable transfer</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h3>Hardened transfer</h3>
+        <form asp-action="TransferSafe" method="post">
+            @Html.AntiForgeryToken()
+            <div class="mb-2">
+                <label class="form-label">From</label>
+                <input class="form-control" name="from" value="alice" />
+            </div>
+            <div class="mb-2">
+                <label class="form-label">To</label>
+                <input class="form-control" name="to" value="bob" />
+            </div>
+            <div class="mb-2">
+                <label class="form-label">Amount</label>
+                <input class="form-control" name="amount" value="100" />
+            </div>
+            <button type="submit" class="btn btn-success">Submit protected transfer</button>
+        </form>
+    </div>
+</div>
+
+<div class="alert alert-warning mt-3">
+    The vulnerable form does not use any anti-forgery token. A malicious site could cause a signed-in user to submit the transfer request without their consent.
+</div>

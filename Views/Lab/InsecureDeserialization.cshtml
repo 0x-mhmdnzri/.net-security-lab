@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Insecure Deserialization";
+    var payload = ViewData["Payload"] as string;
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var result = ViewData["Result"] as string;
+    var error = ViewData["Error"] as string;
+}
+
+<h1>Insecure Deserialization</h1>
+<p>This lab demonstrates unsafe JSON deserialization and a hardened mode that parses user data without elevating privileges.</p>
+
+<form method="get" class="lab-form mb-4">
+    <div class="mb-3">
+        <label class="form-label">JSON payload</label>
+        <textarea class="form-control" name="payload" rows="6" placeholder='{"username":"guest","isAdmin":true}'>@payload</textarea>
+    </div>
+    <input type="hidden" name="hardened" value="@hardened" />
+    <button type="submit" class="btn @(hardened ? "btn-success" : "btn-danger")">Run @(hardened ? "hardened" : "vulnerable") deserialization</button>
+    <a class="btn btn-secondary" href="?payload=@payload&amp;hardened=@(!hardened)">@(!hardened ? "Switch to hardened" : "Switch to vulnerable")</a>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(result))
+{
+    <div class="alert alert-info">@result</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="alert @(hardened ? "alert-success" : "alert-warning")">
+    @if (hardened)
+    {
+        <text><strong>Hardened:</strong> The server accepts JSON content safely and does not allow privilege escalation via user-controlled payloads.</text>
+    }
+    else
+    {
+        <text><strong>Vulnerable:</strong> This example treats user-provided JSON as trusted and may grant admin status if the payload includes it.</text>
+    }
+</div>

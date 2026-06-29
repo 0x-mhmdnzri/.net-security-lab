@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Clickjacking";
+}
+
+<h1>Clickjacking</h1>
+<p>This page shows a target page embedded in an iframe. The hardened target sets <code>X-Frame-Options: DENY</code> to prevent framing.</p>
+
+<div class="mb-3">
+    <h2>Vulnerable frame</h2>
+    <iframe src="@Url.Action("ClickjackingTarget", "Lab", new { hardened = false })" width="100%" height="220" title="Vulnerable frame"></iframe>
+</div>
+
+<div class="mb-3">
+    <h2>Hardened frame</h2>
+    <iframe src="@Url.Action("ClickjackingTarget", "Lab", new { hardened = true })" width="100%" height="220" title="Hardened frame"></iframe>
+</div>
+
+<div class="alert alert-info">
+    The vulnerable frame should render normally. The hardened frame will be blocked by the browser because the target page rejects framing.
+</div>

@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Clickjacking target";
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+}
+
+<h1>Clickjacking target</h1>
+<p>This page can be embedded in a frame when vulnerable. Hardened mode adds <code>X-Frame-Options: DENY</code>.</p>
+<button class="btn btn-primary">Important action</button>
+@if (hardened)
+{
+    <div class="alert alert-success mt-3">Frame protection is enabled for this page.</div>
+}
+else
+{
+    <div class="alert alert-warning mt-3">This page does not block framing.</div>
+}

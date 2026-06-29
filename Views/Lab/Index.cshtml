@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "Security Lab";
+}
+
+<div class="lab-hero">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>Security Laboratory</h1>
+            <p class="lead">An interactive custom lab for teaching web application vulnerabilities and remediation. Each exercise includes a vulnerable mode plus a hardened implementation so students can compare attack vectors, outcomes, and fixes.</p>
+        </div>
+        <div class="col-md-4 text-md-end mt-4 mt-md-0">
+            <a class="btn btn-light btn-lg" asp-controller="Lab" asp-action="Index">Start the lab</a>
+        </div>
+    </div>
+</div>
+
+<h2 class="lab-section-title">Core web vulnerabilities</h2>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in new[] {
+        new { Title = "XSS", Description = "Reflected cross-site scripting plus safe output encoding.", Action = "Xss" },
+        new { Title = "Open Redirect", Description = "Unvalidated redirects and local URL restrictions.", Action = "OpenRedirect" },
+        new { Title = "Clickjacking", Description = "Framing attacks and X-Frame-Options protection.", Action = "Clickjacking" },
+        new { Title = "CSRF", Description = "Site request forgery and anti-forgery tokens.", Action = "Csrf" },
+        new { Title = "IDOR", Description = "Direct object references and ownership validation.", Action = "Idor" },
+        new { Title = "SQL Injection", Description = "Unsafe SQL concatenation and parameterized queries.", Action = "SqlInjection" },
+        new { Title = "Race Condition", Description = "Concurrent data updates and synchronization.", Action = "RaceCondition" },
+        new { Title = "SSRF", Description = "Server-side request forgery and host allowlisting.", Action = "Ssrf" }
+    }) {
+        <div class="col">
+            <div class="card lab-card h-100">
+                <div class="card-body">
+                    <h3>@item.Title</h3>
+                    <p>@item.Description</p>
+                    <a class="btn btn-primary" asp-controller="Lab" asp-action="@item.Action">Open lab</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<h2 class="lab-section-title">Advanced vulnerability labs</h2>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in new[] {
+        new { Title = "Insecure Deserialization", Description = "Unsafe object deserialization and a safe JSON alternative.", Action = "InsecureDeserialization" },
+        new { Title = "XML External Entity", Description = "XXE payloads and DTD parsing protection.", Action = "Xxe" },
+        new { Title = "Template Injection", Description = "Server-side template evaluation versus safe rendering.", Action = "TemplateInjection" },
+        new { Title = "Broken Access Control", Description = "Application logic flaws and role bypasses.", Action = "LogicError" },
+        new { Title = "Remote Code Execution", Description = "Unsafe script execution and hardened code handling.", Action = "RemoteCodeExecution" },
+        new { Title = "Same Origin Policy", Description = "CORS misconfiguration and front-end origin rules.", Action = "SameOriginPolicy" },
+        new { Title = "SSO Security", Description = "Single sign-on state validation and redirect protection.", Action = "Sso" },
+        new { Title = "Information Disclosure", Description = "Verbose error leaks and safe error handling.", Action = "InformationDisclosure" }
+    }) {
+        <div class="col">
+            <div class="card lab-card h-100">
+                <div class="card-body">
+                    <h3>@item.Title</h3>
+                    <p>@item.Description</p>
+                    <a class="btn btn-primary" asp-controller="Lab" asp-action="@item.Action">Open lab</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="alert alert-secondary mt-4">
+    <strong>Note:</strong> This lab is designed for classroom and training use only. The vulnerable implementations are intentionally unsafe so students can learn how attackers exploit them.
+</div>

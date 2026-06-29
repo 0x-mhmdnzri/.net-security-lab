@@ -1,0 +1,57 @@
+@{
+    ViewData["Title"] = "SQL injection";
+    var query = ViewData["Query"] as string;
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var results = ViewData["Results"] as IEnumerable<SecurityLab.Models.Product> ?? Array.Empty<SecurityLab.Models.Product>();
+}
+
+<h1>SQL injection</h1>
+<p>Search the product catalog. The vulnerable query concatenates input into SQL, while the hardened version uses parameterized commands.</p>
+
+<form method="get" class="mb-3">
+    <input type="hidden" name="hardened" value="@hardened" />
+    <div class="mb-2">
+        <label class="form-label">Search term</label>
+        <input class="form-control" name="query" value="@query" />
+    </div>
+    <button type="submit" class="btn @(hardened ? "btn-success" : "btn-danger")">Search @(hardened ? "hardened" : "vulnerable")</button>
+    <a class="btn btn-secondary" href="?query=@query&amp;hardened=@(!hardened)">Switch to @(!hardened ? "hardened" : "vulnerable")</a>
+</form>
+
+@if (results.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in results)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (!string.IsNullOrWhiteSpace(query))
+{
+    <div class="alert alert-warning">No results returned.</div>
+}
+
+<div class="alert @(hardened ? "alert-success" : "alert-danger")">
+    @if (hardened)
+    {
+        <p>This query is protected by parameterization.</p>
+    }
+    else
+    {
+        <p>This query is vulnerable to SQL injection. Try a payload such as <code>' OR '1'='1</code>.</p>
+    }
+</div>

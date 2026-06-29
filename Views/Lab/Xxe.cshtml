@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "XML External Entity (XXE)";
+    var xml = ViewData["Xml"] as string;
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var result = ViewData["Result"] as string;
+    var error = ViewData["Error"] as string;
+}
+
+<h1>XML External Entity (XXE)</h1>
+<p>This exercise shows a vulnerable XML parser that may resolve external entities, and a hardened parser that blocks DTD processing.</p>
+
+<form method="get" class="lab-form mb-4">
+    <div class="mb-3">
+        <label class="form-label">XML document</label>
+        <textarea class="form-control" name="xml" rows="8" placeholder="&lt;?xml version=\"1.0\"?&gt;">@xml</textarea>
+    </div>
+    <input type="hidden" name="hardened" value="@hardened" />
+    <button type="submit" class="btn @(hardened ? "btn-success" : "btn-danger")">Parse @(hardened ? "hardened" : "vulnerable") XML</button>
+    <a class="btn btn-secondary" href="?xml=@xml&amp;hardened=@(!hardened)">@(!hardened ? "Switch to hardened" : "Switch to vulnerable")</a>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(result))
+{
+    <div class="alert alert-info"><pre>@result</pre></div>
+}
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="alert @(hardened ? "alert-success" : "alert-warning")">
+    @if (hardened)
+    {
+        <text><strong>Hardened:</strong> DTD processing is disabled and external resources are not loaded.</text>
+    }
+    else
+    {
+        <text><strong>Vulnerable:</strong> The parser may fetch remote resources or access local files through external entities.</text>
+    }
+</div>

@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Template Injection";
+    var template = ViewData["Template"] as string;
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var output = ViewData["Output"] as string;
+    var error = ViewData["Error"] as string;
+}
+
+<h1>Template Injection</h1>
+<p>Enter a template expression in the form <code>{{ expression }}</code>. The vulnerable mode executes the content as C# script, while the hardened mode encodes it safely.</p>
+
+<form method="get" class="lab-form mb-4">
+    <div class="mb-3">
+        <label class="form-label">Template text</label>
+        <textarea class="form-control" name="template" rows="5" placeholder="Hello, {{ \"world\" }}">@template</textarea>
+    </div>
+    <input type="hidden" name="hardened" value="@hardened" />
+    <button type="submit" class="btn @(hardened ? "btn-success" : "btn-danger")">Render @(hardened ? "hardened" : "vulnerable") template</button>
+    <a class="btn btn-secondary" href="?template=@template&amp;hardened=@(!hardened)">@(!hardened ? "Switch to hardened" : "Switch to vulnerable")</a>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(output))
+{
+    <div class="alert alert-info"><pre>@output</pre></div>
+}
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="alert @(hardened ? "alert-success" : "alert-warning")">
+    @if (hardened)
+    {
+        <text><strong>Hardened:</strong> The template is treated as plain text, preventing script evaluation.</text>
+    }
+    else
+    {
+        <text><strong>Vulnerable:</strong> The content is executed, so untrusted input may run arbitrary code.</text>
+    }
+</div>

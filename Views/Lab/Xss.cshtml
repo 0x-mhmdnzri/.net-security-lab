@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Cross-site scripting";
+    var input = ViewData["Input"] as string;
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+}
+
+<h1>Cross-site scripting (XSS)</h1>
+<p>Enter text to see how unescaped output can execute script code. The hardened version encodes user input before rendering.</p>
+
+<form method="get" class="mb-3">
+    <input type="hidden" name="hardened" value="false" />
+    <div class="mb-2">
+        <label class="form-label">Payload</label>
+        <input class="form-control" name="input" value="@input" placeholder="Enter message or script payload" />
+    </div>
+    <button type="submit" class="btn btn-danger">Submit vulnerable</button>
+    <a class="btn btn-secondary" href="?hardened=true">View hardened version</a>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(input))
+{
+    <div class="card mb-3">
+        <div class="card-header">Rendered output</div>
+        <div class="card-body">
+            @if (!hardened)
+            {
+                <p><strong>Vulnerable output</strong></p>
+                @Html.Raw(input)
+            }
+            else
+            {
+                <p><strong>Hardened output</strong></p>
+                <div>@input</div>
+            }
+        </div>
+    </div>
+}
+
+@if (hardened)
+{
+    <div class="alert alert-success">This version uses automatic HTML encoding and blocks injected markup.</div>
+}
+else
+{
+    <div class="alert alert-warning">This version renders raw input and is vulnerable to XSS.</div>
+}

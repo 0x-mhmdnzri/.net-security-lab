@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Information Disclosure";
+    var trigger = ViewData["Trigger"] as bool? ?? false;
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var result = ViewData["Result"] as string;
+}
+
+<h1>Information Disclosure</h1>
+<p>Trigger an error to see how vulnerable mode exposes stack traces or sensitive details, while hardened mode returns a generic message.</p>
+
+<form method="get" class="lab-form mb-4">
+    <input type="hidden" name="hardened" value="@hardened" />
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="trigger" value="true" id="trigger" @(trigger ? "checked" : "") />
+        <label class="form-check-label" for="trigger">Trigger exception</label>
+    </div>
+    <button type="submit" class="btn @(hardened ? "btn-success" : "btn-danger")">Run @(hardened ? "hardened" : "vulnerable") flow</button>
+    <a class="btn btn-secondary" href="?trigger=@trigger&amp;hardened=@(!hardened)">@(!hardened ? "Switch to hardened" : "Switch to vulnerable")</a>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(result))
+{
+    <div class="alert alert-info"><pre>@result</pre></div>
+}
+
+<div class="alert @(hardened ? "alert-success" : "alert-warning")">
+    @if (hardened)
+    {
+        <text><strong>Hardened:</strong> Sensitive details are suppressed in the displayed response.</text>
+    }
+    else
+    {
+        <text><strong>Vulnerable:</strong> The app exposes full exception details and sensitive internal paths.</text>
+    }
+</div>

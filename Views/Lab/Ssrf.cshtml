@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "SSRF";
+    var targetUrl = ViewData["TargetUrl"] as string;
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var error = ViewData["Error"] as string;
+    var response = ViewData["Response"] as string;
+}
+
+<h1>Server-side request forgery (SSRF)</h1>
+<p>Enter a URL to have the server fetch it. The vulnerable version accepts any URL, while the hardened version restricts requests to a small whitelist.</p>
+
+<form method="get" class="mb-3">
+    <input type="hidden" name="hardened" value="@hardened" />
+    <div class="mb-2">
+        <label class="form-label">Target URL</label>
+        <input class="form-control" name="targetUrl" value="@targetUrl" />
+    </div>
+    <button type="submit" class="btn @(hardened ? "btn-success" : "btn-danger")">Fetch</button>
+    <a class="btn btn-secondary" href="?targetUrl=@targetUrl&amp;hardened=@(!hardened)">@(!hardened ? "Switch to hardened" : "Switch to vulnerable")</a>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(response))
+{
+    <div class="card mb-3">
+        <div class="card-header">Fetched response</div>
+        <div class="card-body"><pre>@response</pre></div>
+    </div>
+}
+
+<div class="alert @(hardened ? "alert-success" : "alert-danger")">
+    @if (hardened)
+    {
+        <p>The hardened endpoint only allows requests to localhost or 127.0.0.1.</p>
+    }
+    else
+    {
+        <p>The vulnerable endpoint fetches any remote URL provided by the user.</p>
+    }
+</div>

@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Same Origin Policy";
+    var origin = ViewData["Origin"] as string ?? "https://malicious.example";
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var result = ViewData["Result"] as string;
+}
+
+<h1>Same Origin Policy</h1>
+<p>This lab shows how CORS headers can be set insecurely in vulnerable mode and restricted in hardened mode.</p>
+
+<form method="get" class="lab-form mb-4">
+    <div class="mb-3">
+        <label class="form-label">Origin header</label>
+        <input class="form-control" name="origin" value="@origin" />
+    </div>
+    <input type="hidden" name="hardened" value="@hardened" />
+    <button type="submit" class="btn @(hardened ? "btn-success" : "btn-danger")">Send @(hardened ? "hardened" : "vulnerable") request</button>
+    <a class="btn btn-secondary" href="?origin=@origin&amp;hardened=@(!hardened)">@(!hardened ? "Switch to hardened" : "Switch to vulnerable")</a>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(result))
+{
+    <div class="alert alert-info">@result</div>
+}
+
+<div class="alert @(hardened ? "alert-success" : "alert-warning")">
+    @if (hardened)
+    {
+        <text><strong>Hardened:</strong> The response origin is restricted to the trusted host.</text>
+    }
+    else
+    {
+        <text><strong>Vulnerable:</strong> The app reflects the supplied origin header, which weakens same-origin protections.</text>
+    }
+</div>

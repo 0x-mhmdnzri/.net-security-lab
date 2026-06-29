@@ -1,0 +1,51 @@
+@{
+    ViewData["Title"] = "Race condition";
+    var initialBalance = (int)(ViewData["InitialBalance"] ?? 0);
+    var finalBalance = (int)(ViewData["FinalBalance"] ?? 0);
+    var results = ViewData["Results"] as IEnumerable<SecurityLab.Models.RaceResult> ?? Array.Empty<SecurityLab.Models.RaceResult>();
+    var safe = (bool)(ViewData["Safe"] ?? false);
+    var attempts = (int)(ViewData["Attempts"] ?? 5);
+    var amount = (int)(ViewData["Amount"] ?? 30);
+}
+
+<h1>Race condition</h1>
+<p>This exercise runs multiple concurrent withdrawals against a shared account.</p>
+
+<div class="mb-3">
+    <a class="btn btn-danger" href="?safe=false">Run vulnerable test</a>
+    <a class="btn btn-success" href="?safe=true">Run hardened test</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p><strong>Mode:</strong> @(safe ? "Hardened" : "Vulnerable")</p>
+        <p><strong>Attempts:</strong> @attempts</p>
+        <p><strong>Withdrawal amount:</strong> @amount</p>
+        <p><strong>Initial balance:</strong> @initialBalance</p>
+        <p><strong>Final balance:</strong> @finalBalance</p>
+    </div>
+</div>
+
+<table class="table table-sm">
+    <thead><tr><th>Attempt</th><th>Result</th></tr></thead>
+    <tbody>
+        @foreach (var result in results)
+        {
+            <tr>
+                <td>@result.Attempt</td>
+                <td>@(result.Success ? "Success" : "Failed")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="alert @(safe ? "alert-success" : "alert-warning")">
+    @if (safe)
+    {
+        <p>The hardened version uses locking to avoid concurrent modifications of the shared balance.</p>
+    }
+    else
+    {
+        <p>The vulnerable version can withdraw more money than the account balance when multiple requests execute at the same time.</p>
+    }
+</div>

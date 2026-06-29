@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Remote Code Execution";
+    var code = ViewData["Code"] as string;
+    var hardened = ViewData["Hardened"] as bool? ?? false;
+    var result = ViewData["Result"] as string;
+    var error = ViewData["Error"] as string;
+}
+
+<h1>Remote Code Execution</h1>
+<p>Submit a piece of code to execute. In the vulnerable mode the server evaluates input directly, while the hardened mode only permits simple arithmetic expressions.</p>
+
+<form method="get" class="lab-form mb-4">
+    <div class="mb-3">
+        <label class="form-label">Code snippet</label>
+        <textarea class="form-control" name="code" rows="5" placeholder="1 + 2 * 3">@code</textarea>
+    </div>
+    <input type="hidden" name="hardened" value="@hardened" />
+    <button type="submit" class="btn @(hardened ? "btn-success" : "btn-danger")">Run @(hardened ? "hardened" : "vulnerable") code</button>
+    <a class="btn btn-secondary" href="?code=@code&amp;hardened=@(!hardened)">@(!hardened ? "Switch to hardened" : "Switch to vulnerable")</a>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(result))
+{
+    <div class="alert alert-info">@result</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="alert @(hardened ? "alert-success" : "alert-warning")">
+    @if (hardened)
+    {
+        <text><strong>Hardened:</strong> Only safe operations are permitted to prevent arbitrary remote code execution.</text>
+    }
+    else
+    {
+        <text><strong>Vulnerable:</strong> This endpoint executes the input directly and may run unsafe code.</text>
+    }
+</div>
